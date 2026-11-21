@@ -1,0 +1,5 @@
+node_modules/
+.runtime/
+.npm-cache/
+work/
+video clips/

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Reconstruct hand and pen motion from video in your browser.">
+  <title>Spinframe · Pen motion studio</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" class="symbols" aria-hidden="true">
+    <symbol id="i-add" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4m-4 6h4m10-6h4m-4 6h4"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m-5 5 5-5 5 5M4 16v4h16v-4"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m9 5 11 7-11 7Z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 5v14m6-14v14" stroke-width="3"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 11a8 8 0 1 1 2 6M4 5v6h6"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v12m-5-5 5 5 5-5M4 17v3h16v-3"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><path d="m4 20 4-.9L20 7l-3-3L5 16l-1 4ZM14 7l3 3"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m8 10 4 4 4-4"/></symbol>
+  </svg>
+  <header class="topbar">
+    <div class="top-inner">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"><svg viewBox="0 0 36 36"><path d="m9 24 18-12M13 11l4 2m2 10 4 2" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="9" cy="24" r="2.4" fill="#ffb284"/><circle cx="27" cy="12" r="2.4" fill="#ffb284"/></svg></div>
+        Spinframe
+      </div>
+      <div class="local"><span aria-hidden="true"></span> Local processing</div>
+    </div>
+  </header>
+  <main>
+    <div class="intro">
+      <h1>Pen motion studio</h1>
+      <p>Turn penspinning footage into a 3D hand and pen animation.</p>
+    </div>
+    <div class="workspace">
+      <section class="sources card" aria-labelledby="sources-title">
+        <div class="card-heading"><h2 id="sources-title">Footage</h2><span id="count" class="count">0 clips</span></div>
+        <div class="source-body">
+          <button type="button" class="drop" id="drop">
+            <span class="upload-icon"><svg><use href="#i-upload"/></svg></span>
+            <strong>Drop videos here</strong><span>or browse files</span>
+          </button>
+          <input type="file" id="files" accept="video/*,.mp4,.mov,.webm" multiple hidden>
+          <button type="button" class="button secondary wide" id="webcam"><svg><use href="#i-camera"/></svg> Record webcam</button>
+          <div id="clip-list" class="clip-list" aria-label="Imported clips"></div>
+          <details id="library" class="details" hidden>
+            <summary>Workspace clips <span id="library-count"></span><svg><use href="#i-chevron"/></svg></summary>
+            <div id="library-list" class="library-list"></div>
+          </details>
+          <div class="settings">
+            <label for="fps">Analysis rate</label>
+            <select id="fps">
+              <option value="24">24 fps</option><option value="30">30 fps</option><option value="60" selected>60 fps</option><option value="120">120 fps</option><option value="240">240 fps</option>
+            </select>
+          </div>
+          <details class="details calibration">
+            <summary>Synchronized cameras <svg><use href="#i-chevron"/></svg></summary>
+            <p>For calibrated views of the same take, load a JSON file with a projection matrix and optional time offset for each clip.</p>
+            <button class="button secondary wide" id="calibrate">Load calibration JSON</button>
+            <input type="file" accept=".json,application/json" id="calibration-file" hidden>
+            <div id="calibration-name" class="calibration-name"></div>
+            <a href="#" id="calibration-example">Download example</a>
+          </details>
+          <button class="button primary wide" id="process" disabled><svg><use href="#i-play"/></svg> Reconstruct motion</button>
+          <div id="progress-wrap" hidden><progress id="progress" max="1" value="0"></progress><button class="text-button" id="cancel">Cancel analysis</button></div>
+          <p id="status" class="status" role="status">Add a clip to start.</p>
+        </div>
+      </section>
+      <section class="result card" aria-labelledby="result-title">
+        <div class="card-heading viewer-heading">
+          <div><h2 id="result-title">3D viewer</h2><p id="result-name">Example animation</p></div>
+          <div class="viewer-actions">
+            <button class="button secondary export" id="export" disabled title="Download frame-by-frame motion as JSON"><svg><use href="#i-download"/></svg><span>Export JSON</span></button>
+          </div>
+        </div>
+        <div class="viewport">
+          <canvas id="viewer" tabindex="0" aria-label="Interactive 3D hand and pen view. Drag or use arrow keys to rotate. Scroll or use plus and minus to zoom."></canvas>
+          <span id="mode" class="mode">DEMO</span>
+          <div class="view-tools">
+            <button class="view-button" id="grid" aria-label="Toggle grid" aria-pressed="true" title="Toggle grid"><svg><use href="#i-grid"/></svg></button>
+            <button class="view-button" id="reset" aria-label="Reset view" title="Reset view"><svg><use href="#i-reset"/></svg></button>
+          </div>
+          <div class="drag-help">Drag to orbit <span>·</span> Scroll to zoom</div>
+        </div>
+        <div class="playback">
+          <div class="timeline">
+            <button class="icon-button play" id="play" aria-label="Play animation"><svg><use href="#i-play"/></svg></button>
+            <label class="sr-only" for="time">Animation timeline</label><input type="range" id="time" step="0.001" min="0" max="4" value="0">
+            <output id="timecode">0:00.00 / 0:04.00</output>
+            <label class="sr-only" for="speed">Playback speed</label><select id="speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select>
+          </div>
+          <div class="legend"><span><i class="hand-dot"></i> Hand joints</span><span><i class="pen-dot"></i> Pen axis</span><span id="quality">Example motion</span></div>
+        </div>
+      </section>
+      <section id="source-preview" class="card source-preview" hidden aria-labelledby="preview-title">
+        <div class="card-heading viewer-heading"><div><h2 id="preview-title">Source preview</h2><p id="preview-name"></p></div><button class="button secondary" id="guide"><svg><use href="#i-pen"/></svg> Mark pen tips</button></div>
+        <div class="source-stage">
+          <video id="preview" muted playsinline preload="metadata"></video>
+          <canvas id="overlay" aria-hidden="true"></canvas>
+        </div>
+        <div class="source-controls">
+          <button class="icon-button" id="source-play" aria-label="Play source video"><svg><use href="#i-play"/></svg></button>
+          <label class="sr-only" for="source-time">Source timeline</label><input type="range" id="source-time" min="0" step="0.001" value="0">
+          <output id="source-timecode">0:00.00</output>
+          <button class="text-button" id="clear-guides" hidden>Clear marks</button>
+        </div>
+        <p id="guide-status" class="guide-status" aria-live="polite">Mark two visible tips on a sharp frame to help the pen tracker.</p>
+      </section>
+    </div>
+  </main>
+  <dialog id="record-dialog">
+    <div class="card-heading"><h2>Record webcam</h2><button class="icon-button" id="close-record" aria-label="Close recorder"><svg><use href="#i-x"/></svg></button></div>
+    <video id="camera" autoplay muted playsinline></video>
+    <div class="record-footer"><p id="record-status" role="status">Requesting camera access…</p><button class="button primary" id="record" disabled><span class="record-dot"></span> Start recording</button></div>
+  </dialog>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
