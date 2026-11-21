@@ -74,6 +74,7 @@ progress{width:100%;height:9px;accent-color:var(--blue)}
 .viewport{position:relative;background:#171c27;height:clamp(340px,46vw,530px)}
 #viewer{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
 #viewer:active{cursor:grabbing}
+#viewer-unavailable{position:absolute;inset:0;display:grid;place-content:center;padding:35px;text-align:center;background:#171c27;color:#e9efff}
 .mode{position:absolute;top:17px;left:17px;padding:4px 8px;border:1px solid #ffffff32;background:#1d2432e5;color:#d0dbff;border-radius:6px;font:650 .75rem/1.3 ui-monospace,Consolas,monospace;letter-spacing:.06em;pointer-events:none}
 .view-tools{position:absolute;top:15px;right:15px;display:flex;gap:6px}
 .view-button{background:#242d3c;border:1px solid #4c576d;border-radius:7px;color:#c9d3ec;display:grid;place-items:center;width:34px;height:34px}

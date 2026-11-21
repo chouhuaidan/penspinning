@@ -1,6 +1,6 @@
 # Spinframe
 
-Spinframe reconstructs a 3D hand skeleton and pen axis from penspinning footage. It runs locally in Chrome or Edge. Video frames and recordings stay on the device.
+Spinframe reconstructs a 3D hand skeleton and pen axis from penspinning footage. It runs locally in Chrome or Edge and uses Three.js with WebGL 2 for the 3D viewer. Video frames and recordings stay on the device.
 
 ## Start
 

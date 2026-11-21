@@ -6,6 +6,9 @@
   <meta name="description" content="Reconstruct hand and pen motion from video in your browser.">
   <title>Spinframe · Pen motion studio</title>
   <link rel="stylesheet" href="/style.css">
+  <script type="importmap">
+    {"imports":{"three":"/vendor/three/three.module.js"}}
+  </script>
 </head>
 <body>
   <svg xmlns="http://www.w3.org/2000/svg" class="symbols" aria-hidden="true">
@@ -80,6 +83,7 @@
         </div>
         <div class="viewport">
           <canvas id="viewer" tabindex="0" aria-label="Interactive 3D hand and pen view. Drag or use arrow keys to rotate. Scroll or use plus and minus to zoom."></canvas>
+          <p id="viewer-unavailable" role="status" hidden>The 3D viewer requires WebGL 2. Open Spinframe in a browser with WebGL 2 enabled.</p>
           <span id="mode" class="mode">DEMO</span>
           <div class="view-tools">
             <button class="view-button" id="grid" aria-label="Toggle grid" aria-pressed="true" title="Toggle grid"><svg><use href="#i-grid"/></svg></button>

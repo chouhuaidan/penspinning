@@ -7,6 +7,11 @@ import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const publicFiles = new Set(['index.html', 'style.css', 'app.js', 'tracking.js', 'vision.js', 'viewer.js']);
+const threeFiles = new Map([
+  ['vendor/three/three.module.js', 'build/three.module.js'],
+  ['vendor/three/three.core.js', 'build/three.core.js'],
+  ['vendor/three/OrbitControls.js', 'examples/jsm/controls/OrbitControls.js']
+]);
 const types = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8',
@@ -36,6 +41,7 @@ createServer(async (request, response) => {
       if (name === basename(name) && isVideo(name)) file = resolve(clipFolder, name);
     }
     if (path === 'models/hand_landmarker.task') file = resolve(root, '.runtime', path);
+    if (threeFiles.has(path)) file = resolve(root, 'node_modules', 'three', threeFiles.get(path));
     if (/^vendor\/(vision_bundle\.mjs|wasm\/vision_wasm_(nosimd_)?internal\.(js|wasm))$/.test(path)) {
       file = resolve(root, 'node_modules', '@mediapipe', 'tasks-vision', path.slice(7));
     }
